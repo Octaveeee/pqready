@@ -222,3 +222,4 @@ __marimo__/
 # Perso
 .bin/
 .venv/
+.claude/
