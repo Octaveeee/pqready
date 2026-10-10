@@ -23,11 +23,12 @@
   - Finding « échange de clés non hybride » → référence `EU_PQC_ROADMAP` (recommandation d'hybridation, échéance 2030 pour le haut risque).
 
 ## 2. ANSSI
+
 - **Sources** :
   - [A22] *ANSSI views on the Post-Quantum Cryptography transition*, 30.03.2022, 7 pages. <https://messervices.cyber.gouv.fr/documents-guides/EN_Position.pdf>
   - [A23] *ANSSI views on the Post-Quantum Cryptography transition (2023 follow up)*, 21.12.2023, 7 pages, addendum à [A22]. <https://messervices.cyber.gouv.fr/documents-guides/follow_up_position_paper_on_post_quantum_cryptography.pdf>
   - [FAQ] *FAQ sur la cryptographie post-quantique (PQC)*, page web non datée, consultée le 09.10.2026. <https://cyber.gouv.fr/enjeux-technologiques/cryptographie-post-quantique/faq-pqc/>
-- **Statut** : avis et recommandations de l'autorité nationale, **non contraignants** pour la plupart des organisations. Le périmètre réglementé en cryptographie se limite aux données classifiées ou Diffusion Restreinte, aux systèmes d'information d'importance vitale (SAIV) et aux visas de sécurité (certification, qualification) ; au-delà, « il n'est pas prévu à l'heure actuelle de réglementation dédiée » [FAQ]. Les avis s'adressent d'abord aux industriels qui développent des produits de sécurité [A22, p. 1].
+- **Statut** : avis et recommandations de l'autorité nationale, **non contraignants** pour la plupart des organisations. Le périmètre réglementé en cryptographie se limite aux données classifiées ou Diffusion Restreinte, aux systèmes d'information d'importance vitale (SAIV) et aux visas de sécurité (certification, qualification)
 - **Ce que dit le texte** :
   - **Deux menaces distinctes.** Le « store now, decrypt later » vise l'échange de clés et agit rétroactivement [A22, p. 1]. La falsification de signatures n'est possible qu'une fois le CRQC disponible : les signatures vérifiées à la volée, comme dans un canal authentifié, ne sont pas touchées avant [A22, p. 2].
   - **Hybridation.** Déployer du PQC n'est pas obligatoire aujourd'hui, mais dès qu'on en déploie, l'hybridation est **obligatoire** en phases 1 et 2 [A22, p. 4]. L'ANSSI « strongly emphasizes the necessity of hybridation wherever post-quantum mitigation is needed both in the short and medium term » [A23, p. 2]. Cela vaut pour l'échange de clés et pour les signatures. Exception : les signatures à base de hachage (XMSS, LMS, SPHINCS+), pour lesquelles l'hybridation est facultative [A22, p. 5 ; A23, p. 4 et 6].
@@ -49,7 +50,7 @@
   - La distinction entre échange de clés (urgent, rétroactif) et signature (à planifier) qui structure les priorités de pqready est celle de l'ANSSI.
   - `X25519MLKEM768` combine X25519 et ML-KEM-768 (niveau 3) : c'est un échange hybride au sens de l'ANSSI, d'où son classement « résistant ».
   - Un échange de clés uniquement post-quantique, sans composante classique, ne suivrait pas la recommandation de l'ANSSI avant la phase 3. Cas absent de la table de classification : à traiter ou à lister dans les limites.
-  - La table de classification range SHA-256 parmi les résistants et AES-128 parmi les « à surveiller ». L'ANSSI encourage SHA2-384 et AES-256 : écart à signaler dans `methodologie.md`.
+  - La table de classification range SHA-256 parmi les résistants et AES-128 parmi les « à surveiller ». L'ANSSI encourage SHA2-384 et AES-256.
   - Le rapport ne doit pas présenter les phases ANSSI comme une obligation pour l'organisation scannée, sauf si elle relève du périmètre réglementé.
   - Référence `ANSSI_HYBRID` : à rattacher aux findings sur l'échange de clés et sur la signature du certificat.
 
