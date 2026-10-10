@@ -11,7 +11,7 @@
 
 - A cryptographically relevant quantum computer (CRQC) will break **RSA, Diffie-Hellman and elliptic-curve cryptography** (Shor's algorithm).
 - **Harvest now, decrypt later:** encrypted traffic recorded today can be decrypted once a CRQC exists. Data that must stay confidential for years is already exposed.
-- **European guidance has also defined target dates for the transition to post-quantum cryptography.** The EU coordinated PQC roadmap (June 2025) asks for first steps and a crypto inventory by end of 2026, and migration of high-risk use cases by end of 2030. A first step in the migration process is to identify **where and which cryptography is being used**.
+- **European guidance has also defined target dates for the transition to post-quantum cryptography.** The EU coordinated PQC roadmap (June 2025) recommends that Member States complete a set of first steps by end of 2026, that high-risk use cases are migrated by end of 2030, and medium-risk use cases by end of 2035. One of those first steps is a cryptographic inventory: identifying **where and which cryptography is being used**.
 
 ## What pqready does
 
