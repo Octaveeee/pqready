@@ -14,7 +14,14 @@ services:
       - ./conf/classique.conf:/etc/nginx/conf.d/default.conf:ro
       - ./certs:/etc/nginx/certs:ro
 
-
+  faible:
+    build:
+      context: .
+      dockerfile: nginx.Dockerfile
+    volumes:
+      - ./conf/faible.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./certs:/etc/nginx/certs:ro
+      
 networks:
   default:
     name : pqready-lab
