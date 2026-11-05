@@ -2,7 +2,7 @@
 
 - **Date** : 09/10/2026
 - **Cibles** : `cloudflare.com` (hybride, repéré en S1) et le site d'une université (classique, repéré en S1). Entité anonymisée
-- **Outil** : `openssl s_client` dans un conteneur `debian:trixie-slim` (paquets `openssl` et `ca-certificates`). Version exacte d'OpenSSL : 3.5.7 9
+- **Outil** : `openssl s_client` dans un conteneur `debian:trixie-slim` (paquets `openssl` et `ca-certificates`). Version exacte d'OpenSSL : 3.5.7
 - **Méthode** : quelques poignées de main TLS standard par cible, aucun test intrusif.
 
 ## Résultat
@@ -31,7 +31,7 @@ openssl s_client -connect <hôte>:443 -groups X25519MLKEM768 -brief </dev/null
 openssl s_client -connect <hôte>:443 -groups X25519 -brief </dev/null
 ```
 
-- ## Sorties observées
+## Sorties observées
 
 **Site d'université, hybride seul → refus**
 
@@ -100,10 +100,7 @@ Le format dépend du type de groupe, avec ou sans `-brief` :
 | Groupe classique | `Peer Temp Key: X25519, 253 bits`         |
 | Groupe hybride   | `Negotiated TLS1.3 group: X25519MLKEM768` |
 
-
-
 ## À creuser
 
 - Le format des deux lignes est-il stable d'une version d'OpenSSL à l'autre ?
 - Que montre la sortie pour un échange de clés TLS 1.2 (ECDHE) ?
-- 
