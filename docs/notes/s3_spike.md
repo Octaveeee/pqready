@@ -2,7 +2,7 @@
 
 - **Date** : 09/10/2026
 - **Cibles** : `cloudflare.com` (hybride, repéré en S1) et le site d'une université (classique, repéré en S1). Entité anonymisée
-- **Outil** : `openssl s_client` dans un conteneur `debian:trixie-slim` (paquets `openssl` et `ca-certificates`). Version exacte d'OpenSSL : 3.5.7
+- **Outil** : `openssl s_client` dans un conteneur `debian:trixie-slim` (paquets `openssl` et `ca-certificates`). Version exacte d'OpenSSL : 3.5.7 (build du 9 Jun 2026)
 - **Méthode** : quelques poignées de main TLS standard par cible, aucun test intrusif.
 
 ## Résultat
@@ -100,7 +100,51 @@ Le format dépend du type de groupe, avec ou sans `-brief` :
 | Groupe classique | `Peer Temp Key: X25519, 253 bits`         |
 | Groupe hybride   | `Negotiated TLS1.3 group: X25519MLKEM768` |
 
+## Lab Docker
+
+- **Date** : 05/11/2026
+- **Lab** : `docker/lab/docker-compose.yml`, nginx 1.26.3 sur `debian:trixie-slim` (OpenSSL 3.5.7), réseau `pqready-lab`. Certificats ECDSA P-256 auto-signés.
+- **Client** : image `pqready-tools`, lancée sur le réseau du lab
+
+| Serveur     | Config TLS                                      |
+| ----------- | ----------------------------------------------- |
+| `hybride`   | TLS 1.3, `ssl_ecdh_curve X25519MLKEM768:X25519` |
+| `classique` | TLS 1.2 et 1.3, `ssl_ecdh_curve X25519`         |
+
+### Résultat
+
+**La matrice du spike donne le résultat attendu sur les deux serveurs.**
+
+|                                             | `classique`                       | `hybride`                                 |
+| ------------------------------------------- | --------------------------------- | ----------------------------------------- |
+| (a) Groupe négocié par défaut               | `Peer Temp Key: X25519`           | `Negotiated TLS1.3 group: X25519MLKEM768` |
+| (b) Hybride seul (`-groups X25519MLKEM768`) | Refusé (alert 40)                 | Accepté                                   |
+| Contrôle : X25519 seul (`-groups X25519`)   | Accepté                           | Accepté (`Peer Temp Key: X25519`)         |
+| TLS 1.2 (`-tls1_2`)                         | Accepté (`Peer Temp Key: X25519`) | Non testé (TLS 1.3 seul)                  |
+| → `pq_hybrid_supported`                     | `false`                           | `true`                                    |
+
+### Sortie TLS 1.2 (`classique`)
+
+```
+CONNECTION ESTABLISHED
+Protocol version: TLSv1.2
+Ciphersuite: ECDHE-ECDSA-AES256-GCM-SHA384
+Peer certificate: CN=classique
+Hash used: SHA256
+Signature type: ecdsa_secp256r1_sha256
+Verification error: self-signed certificate
+Supported Elliptic Curve Point Formats: uncompressed:ansiX962_compressed_prime:ansiX962_compressed_char2
+Peer Temp Key: X25519, 253 bits
+DONE
+```
+
+### Constats pour le parser
+
+- **Vérification du certificat et handshake sont indépendants** : avec un certificat auto-signé, `s_client` affiche `Verification error: self-signed certificate` mais va jusqu'à `CONNECTION ESTABLISHED`. La détection du groupe n'en dépend pas.
+- **Lignes à ignorer** : `Can't use SSL_get_servername`, `depth=...`, `verify error:...`, `Supported Elliptic Curve Point Formats: ...` (TLS 1.2 uniquement).
+
 ## À creuser
 
 - Le format des deux lignes est-il stable d'une version d'OpenSSL à l'autre ?
-- Que montre la sortie pour un échange de clés TLS 1.2 (ECDHE) ?
+
+- Sortie TLS 1.2 avec un échange de clés RSA (sans `ECDHE-`) : à observer sur le serveur `faible`.
