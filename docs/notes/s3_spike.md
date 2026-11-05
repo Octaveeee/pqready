@@ -83,11 +83,16 @@ Peer Temp Key: X25519, 253 bits
 
 ## Signatures à distinguer
 
-| Sortie                                                              | Étape atteinte       | Sens pour pqready                              |
-| ------------------------------------------------------------------- | -------------------- | ---------------------------------------------- |
-| `BIO routines:BIO_lookup_ex ... Name or service not known`          | DNS, aucun handshake | `status: error`, rien à conclure sur la crypto |
-| `SSL alert number 40` en hybride seul, **et** succès en X25519 seul | Handshake refusé     | `pq_hybrid_supported: false`                   |
-| `CONNECTION ESTABLISHED` en hybride seul                            | Handshake réussi     | `pq_hybrid_supported: true`                    |
+> **Corrigé après le lab (05/11/2026)** : `CONNECTION ESTABLISHED` en hybride seul ne suffit pas à conclure `true` (faux positif sur le serveur `faible`, voir « Lab Docker »).
+
+| Sortie                                                                          | Étape atteinte                 | Sens pour pqready                                     |
+| ------------------------------------------------------------------------------- | ------------------------------ | ----------------------------------------------------- |
+| `BIO routines:BIO_lookup_ex ... Name or service not known`                      | DNS, aucun handshake           | `status: error`, rien à conclure sur la crypto        |
+| `tls_setup_handshake:no protocols available`                                    | Client, aucun handshake        | Erreur de config du client, **pas** un refus serveur  |
+| `SSL alert number 40` en hybride seul, **et** succès en X25519 seul             | Handshake refusé               | `pq_hybrid_supported: false`                          |
+| `SSL alert number 40` en hybride seul **et** en X25519 seul                     | Handshake refusé               | `pq_hybrid_supported: unknown`                        |
+| `CONNECTION ESTABLISHED` en hybride seul, **sans** `Negotiated TLS1.3 group`    | Handshake réussi, groupe ignoré | `pq_hybrid_supported: false`                         |
+| `Negotiated TLS1.3 group: X25519MLKEM768`                                       | Handshake réussi               | `pq_hybrid_supported: true`                           |
 
 **L'alert 40 seule ne prouve rien.** C'est une erreur générique : pas de groupe en commun, pas de suite en commun, version refusée. Il faut l'appel de contrôle en X25519 seul, où seul le groupe change : s'il réussit, l'échec venait bien du groupe. S'il échoue aussi, le résultat est « inconnu », pas « hybride non ».
 
@@ -103,25 +108,31 @@ Le format dépend du type de groupe, avec ou sans `-brief` :
 ## Lab Docker
 
 - **Date** : 05/11/2026
-- **Lab** : `docker/lab/docker-compose.yml`, nginx 1.26.3 sur `debian:trixie-slim` (OpenSSL 3.5.7), réseau `pqready-lab`. Certificats ECDSA P-256 auto-signés.
+- **Lab** : `docker/lab/docker-compose.yml`, nginx 1.26.3 sur `debian:trixie-slim` (OpenSSL 3.5.7), réseau `pqready-lab`. Certificats auto-signés.
 - **Client** : image `pqready-tools`, lancée sur le réseau du lab
 
-| Serveur     | Config TLS                                      |
-| ----------- | ----------------------------------------------- |
-| `hybride`   | TLS 1.3, `ssl_ecdh_curve X25519MLKEM768:X25519` |
-| `classique` | TLS 1.2 et 1.3, `ssl_ecdh_curve X25519`         |
+| Serveur     | Config TLS                                                                                         | Certificat    |
+| ----------- | -------------------------------------------------------------------------------------------------- | ------------- |
+| `hybride`   | TLS 1.3, `ssl_ecdh_curve X25519MLKEM768:X25519`                                                    | ECDSA P-256   |
+| `classique` | TLS 1.2 et 1.3, `ssl_ecdh_curve X25519`                                                            | ECDSA P-256   |
+| `faible`    | TLS 1.0, 1.1 et 1.2, `ssl_ciphers "AES128-SHA:ECDHE-RSA-AES128-SHA:@SECLEVEL=0"`, ordre du serveur | RSA 1024      |
+
+Pour `faible`, `@SECLEVEL=0` dans `ssl_ciphers` suffit : nginx démarre sans abaisser le niveau de sécurité dans `openssl.cnf`.
 
 ### Résultat
 
-**La matrice du spike donne le résultat attendu sur les deux serveurs.**
+**La matrice donne le bon résultat sur les trois serveurs, à condition de lire la ligne du groupe négocié et pas seulement `CONNECTION ESTABLISHED`.**
 
-|                                             | `classique`                       | `hybride`                                 |
-| ------------------------------------------- | --------------------------------- | ----------------------------------------- |
-| (a) Groupe négocié par défaut               | `Peer Temp Key: X25519`           | `Negotiated TLS1.3 group: X25519MLKEM768` |
-| (b) Hybride seul (`-groups X25519MLKEM768`) | Refusé (alert 40)                 | Accepté                                   |
-| Contrôle : X25519 seul (`-groups X25519`)   | Accepté                           | Accepté (`Peer Temp Key: X25519`)         |
-| TLS 1.2 (`-tls1_2`)                         | Accepté (`Peer Temp Key: X25519`) | Non testé (TLS 1.3 seul)                  |
-| → `pq_hybrid_supported`                     | `false`                           | `true`                                    |
+|                                             | `classique`                       | `hybride`                                 | `faible`                                       |
+| ------------------------------------------- | --------------------------------- | ----------------------------------------- | ---------------------------------------------- |
+| (a) Groupe négocié par défaut               | `Peer Temp Key: X25519`           | `Negotiated TLS1.3 group: X25519MLKEM768` | Aucun (TLS 1.2, `AES128-SHA`, échange RSA)     |
+| (b) Hybride seul (`-groups X25519MLKEM768`) | Refusé (alert 40)                 | Accepté                                   | **Accepté, sans ligne de groupe**              |
+| Contrôle : X25519 seul (`-groups X25519`)   | Accepté                           | Accepté (`Peer Temp Key: X25519`)         | Accepté, sans ligne de groupe                  |
+| TLS 1.2 (`-tls1_2`)                         | Accepté (`Peer Temp Key: X25519`) | Non testé (TLS 1.3 seul)                  | Accepté (par défaut)                           |
+| TLS 1.0 / 1.1 (`-tls1`, `-tls1_1`)          | Non testé                         | Non testé                                 | Acceptés (client en `@SECLEVEL=0`)             |
+| → `pq_hybrid_supported`                     | `false`                           | `true`                                    | `false`                                        |
+
+Pour `faible`, ces appels ont été faits avec `-cipher 'DEFAULT:@SECLEVEL=0'` côté client (appels sans : voir « Niveau de sécurité du client »).
 
 ### Sortie TLS 1.2 (`classique`)
 
@@ -138,13 +149,38 @@ Peer Temp Key: X25519, 253 bits
 DONE
 ```
 
+### Sortie TLS 1.2 avec échange de clés RSA (`faible`, hybride seul)
+
+```
+CONNECTION ESTABLISHED
+Protocol version: TLSv1.2
+Ciphersuite: AES128-SHA
+Peer certificate: CN=faible
+Verification error: self-signed certificate
+DONE
+```
+
+- **Faux positif évité** : le client ne propose que `X25519MLKEM768`, et la connexion s'établit quand même. L'échange de clés RSA n'utilise aucun groupe, donc le serveur ignore la liste du client. Avec l'ancienne règle (« `CONNECTION ESTABLISHED` → `true` »), le pire serveur du lab serait déclaré hybride PQC.
+- **Échange de clés RSA reconnaissable à deux signes** : une suite sans préfixe `ECDHE-` / `DHE-` (`AES128-SHA`), et l'absence de ligne `Peer Temp Key`. Les lignes `Hash used` et `Signature type` sont absentes aussi (en échange RSA, le serveur n'envoie pas de `ServerKeyExchange` signé).
+
+### Niveau de sécurité du client
+
+| Appel sur `faible`                       | Résultat                                                                                   |
+| ---------------------------------------- | ------------------------------------------------------------------------------------------ |
+| Par défaut, **sans** `@SECLEVEL=0`       | Accepté en TLS 1.2, avec `Verification error: EE certificate key too weak`                 |
+| `-tls1`, **sans** `@SECLEVEL=0`          | `tls_setup_handshake:no protocols available` : le client refuse avant tout envoi           |
+| `-tls1`, `-tls1_1` **avec** `@SECLEVEL=0` | Acceptés                                                                                  |
+
+- En TLS 1.2, le niveau de sécurité par défaut ne bloque pas le handshake : il dégrade seulement la vérification du certificat (`EE certificate key too weak` pour RSA 1024).
+- **Les sondes de versions anciennes doivent utiliser `-cipher 'DEFAULT:@SECLEVEL=0'`**. Sans ça, tout serveur qui accepte TLS 1.0 apparaîtrait comme le refusant : faux négatif sur un P0.
+
 ### Constats pour le parser
 
+- **Preuve de l'hybride = la ligne `Negotiated TLS1.3 group: X25519MLKEM768`**, pas `CONNECTION ESTABLISHED`.
 - **Vérification du certificat et handshake sont indépendants** : avec un certificat auto-signé, `s_client` affiche `Verification error: self-signed certificate` mais va jusqu'à `CONNECTION ESTABLISHED`. La détection du groupe n'en dépend pas.
 - **Lignes à ignorer** : `Can't use SSL_get_servername`, `depth=...`, `verify error:...`, `Supported Elliptic Curve Point Formats: ...` (TLS 1.2 uniquement).
 
 ## À creuser
 
 - Le format des deux lignes est-il stable d'une version d'OpenSSL à l'autre ?
-
-- Sortie TLS 1.2 avec un échange de clés RSA (sans `ECDHE-`) : à observer sur le serveur `faible`.
+- Un serveur qui accepte TLS 1.3 **et** un échange de clés RSA en TLS 1.2 : que donne l'appel hybride seul (repli en TLS 1.2 sans groupe ?) — non testé, même règle attendue.
