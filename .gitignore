@@ -223,3 +223,4 @@ __marimo__/
 .bin/
 .venv/
 .claude/
+docker/lab/certs/

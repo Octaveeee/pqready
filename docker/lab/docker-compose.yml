@@ -1,0 +1,12 @@
+services:
+  hybride:
+    build:
+      context: .
+      dockerfile: nginx.Dockerfile
+    volumes:
+      - ./conf/hybride.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./certs:/etc/nginx/certs:ro
+
+networks:
+  default:
+    name : pqready-lab
