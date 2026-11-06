@@ -1,0 +1,12 @@
+Connecting to 172.18.0.3
+Can't use SSL_get_servername
+depth=0 CN=faible
+verify error:num=66:EE certificate key too weak
+depth=0 CN=faible
+verify error:num=66:EE certificate key too weak
+CONNECTION ESTABLISHED
+Protocol version: TLSv1.2
+Ciphersuite: AES128-SHA
+Peer certificate: CN=faible
+Verification error: EE certificate key too weak
+DONE

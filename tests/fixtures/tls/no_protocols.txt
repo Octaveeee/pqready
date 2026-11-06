@@ -1,0 +1,2 @@
+Connecting to 172.18.0.3
+40073DCD347E0000:error:0A0000BF:SSL routines:tls_setup_handshake:no protocols available:../ssl/statem/statem_lib.c:155:

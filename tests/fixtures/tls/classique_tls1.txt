@@ -1,0 +1,2 @@
+Connecting to 172.18.0.4
+4087CDB161770000:error:0A00042E:SSL routines:ssl3_read_bytes:tlsv1 alert protocol version:../ssl/record/rec_layer_s3.c:918:SSL alert number 70

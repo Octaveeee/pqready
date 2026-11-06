@@ -1,0 +1,10 @@
+Connecting to 172.18.0.3
+Can't use SSL_get_servername
+depth=0 CN=faible
+verify error:num=18:self-signed certificate
+CONNECTION ESTABLISHED
+Protocol version: TLSv1
+Ciphersuite: AES128-SHA
+Peer certificate: CN=faible
+Verification error: self-signed certificate
+DONE
