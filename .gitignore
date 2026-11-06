@@ -224,3 +224,6 @@ __marimo__/
 .venv/
 .claude/
 docker/lab/certs/
+
+# Scan results (never commit real scan output)
+out/
