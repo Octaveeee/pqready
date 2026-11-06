@@ -205,3 +205,23 @@ openssl s_client -connect <hôte>:443 -tls1_2 -cipher 'kRSA:@SECLEVEL=0' -brief 
 ```
 ...:error:0A00042E:SSL routines:ssl3_read_bytes:tlsv1 alert protocol version:../ssl/record/rec_layer_s3.c:918:SSL alert number 70
 ```
+
+## Scan public (S4)
+
+- **Date** : 06/11/2026
+- **Commande** : `pqready scan` (`--timeout 10 --delay 2`), image `pqready-tools`, 8 à 9 handshakes par cible
+- **Cibles** : 3 sites publics, entités anonymisées. CSV et JSON dans `out/` (non versionné)
+
+### Résultat
+
+|                     | Site hybride (S1/S3) | Site d'université | Gros site grand public |
+| ------------------- | -------------------- | ----------------- | ---------------------- |
+| Statut              | ok                   | ok                | ok                     |
+| Hybride PQC         | oui                  | non               | non                    |
+| Groupe négocié      | `X25519MLKEM768`     | `X25519`          | `X25519`               |
+| Versions            | TLS 1.0 à 1.3        | TLS 1.2, 1.3      | TLS 1.2, 1.3           |
+| Échange de clés RSA | oui                  | oui               | non                    |
+| Certificat (défaut) | EC 256               | RSA 2048          | EC 256                 |
+
+- **Serveur à double certificat** : le site hybride présente un certificat EC au client par défaut, mais accepte kRSA, qui exige un certificat RSA. Il sert donc deux certificats ; `pqready` ne rapporte que le premier (limite ajoutée à l'ADR-002).
+- **`Peer Temp Key: ECDH, prime256v1` toujours pas observé** : les trois sites négocient `X25519`. Le cas reste couvert par un test unitaire écrit à la main.

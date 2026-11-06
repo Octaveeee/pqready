@@ -164,4 +164,4 @@ Conforme à la configuration nginx des deux serveurs.
 
 - **Le cas courant n'est pas testé** : un serveur avec certificat **RSA** mais sans suites `kRSA` (ex. `ECDHE-RSA` seul). Le refus de `classique` était garanti d'avance, puisqu'un échange de clés RSA exige un certificat RSA et que `classique` a un certificat ECDSA. Alerte 40 attendue
 - **La sonde `kRSA` ne teste que TLS 1.2.** Un serveur qui n'accepterait l'échange RSA qu'en TLS 1.0/1.1 ne serait pas détecté.
-- 
+- **Un seul certificat rapporté.** Un serveur peut servir plusieurs certificats selon le client (ex. EC aux clients modernes, RSA aux anciens). `pqready` ne rapporte que celui présenté au client par défaut. Observé en S4 sur un site public : certificat EC rapporté, mais sonde `kRSA` acceptée, donc certificat RSA également servi (voir `docs/notes/s3_spike.md`, section « Scan public (S4) »).
