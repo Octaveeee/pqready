@@ -1,0 +1,6 @@
+.git
+.venv
+.bin
+**/__pycache__
+docker/lab/certs
+tests
