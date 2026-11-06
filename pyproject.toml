@@ -29,3 +29,4 @@ select = ["E", "F", "I", "B", "UP"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+markers = ["integration: scans the Docker lab (run inside the tools image)"]
