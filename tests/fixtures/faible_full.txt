@@ -1,0 +1,74 @@
+Connecting to 172.18.0.4
+Can't use SSL_get_servername
+depth=0 CN=faible
+verify error:num=18:self-signed certificate
+verify return:1
+depth=0 CN=faible
+verify return:1
+CONNECTED(00000003)
+---
+Certificate chain
+ 0 s:CN=faible
+   i:CN=faible
+   a:PKEY: RSA, 1024 (bit); sigalg: sha256WithRSAEncryption
+   v:NotBefore: Nov  5 20:56:40 2026 GMT; NotAfter: Nov  5 20:56:40 2027 GMT
+---
+Server certificate
+-----BEGIN CERTIFICATE-----
+MIIB/jCCAWegAwIBAgIUTMVFHO7cEpIlthegQ6n4j6L61G0wDQYJKoZIhvcNAQEL
+BQAwETEPMA0GA1UEAwwGZmFpYmxlMB4XDTI2MTEwNTIwNTY0MFoXDTI3MTEwNTIw
+NTY0MFowETEPMA0GA1UEAwwGZmFpYmxlMIGfMA0GCSqGSIb3DQEBAQUAA4GNADCB
+iQKBgQC4sKe8SWkzTpT7uqAjlj0eG4OzdQ09cbJWFcK9fON/jRHnXVlXdk+qhtZo
+s2+w1OOuJVD8jJB/Bj1WbcbjnZxK8bNX04NPGJY/ycEdjT9l+8LA+J2C9V99Sshy
+l7LrSCO+BfZdUNyBLv5HNdULNJCoU0IvMm0BhvkpEh+6scHXYQIDAQABo1MwUTAd
+BgNVHQ4EFgQUndeijRwaxRo3jTPWEC3UgGufcyYwHwYDVR0jBBgwFoAUndeijRwa
+xRo3jTPWEC3UgGufcyYwDwYDVR0TAQH/BAUwAwEB/zANBgkqhkiG9w0BAQsFAAOB
+gQADEZvjuMOX5BxnLmaZHrlHh1uuJJrK1h/64mjyaRf49MEcGbVEx+oUOKyDBltK
+aO0xrFX6FjnEVGBav9k8RbfjDoubRHCPys/L1TDW+HG9TRQMHQkrGQ7yS82lx8+X
+06Yac3xq/nPYZNVzAUNmYdwbIJrfZvWDjUWzs3C99kcuPw==
+-----END CERTIFICATE-----
+subject=CN=faible
+issuer=CN=faible
+---
+No client certificate CA names sent
+---
+SSL handshake has read 890 bytes and written 1758 bytes
+Verification error: self-signed certificate
+---
+New, SSLv3, Cipher is AES128-SHA
+Protocol: TLSv1.2
+Server public key is 1024 bit
+Secure Renegotiation IS supported
+Compression: NONE
+Expansion: NONE
+No ALPN negotiated
+SSL-Session:
+    Protocol  : TLSv1.2
+    Cipher    : AES128-SHA
+    Session-ID: DB5B4FCA1BC77AD7F728472E13B32A85AEC25BE1960872761549513AA0F619FA
+    Session-ID-ctx: 
+    Master-Key: 89DF2B3A8E900190D57B78AF7752F65B7D3CDA2784E18239DDCE62C1692ACA98C025DC640796AA5A27D1B988728072EE
+    PSK identity: None
+    PSK identity hint: None
+    SRP username: None
+    TLS session ticket lifetime hint: 300 (seconds)
+    TLS session ticket:
+    0000 - f0 b3 71 e3 a8 d2 6c 7a-ca 4f 0d 3d 8e 39 7f 2f   ..q...lz.O.=.9./
+    0010 - f7 9f 3b 5d 5a a3 59 cc-a5 15 be 5b fd 1b e4 36   ..;]Z.Y....[...6
+    0020 - 18 64 d9 de 90 7d ab c5-b5 59 1b a3 85 89 fa 15   .d...}...Y......
+    0030 - 18 f4 53 3b 40 05 ea 5f-cb a7 3c 78 2f 7d 81 b4   ..S;@.._..<x/}..
+    0040 - be 78 94 da 0e 4b 29 79-2b b8 82 fd 2d a6 37 45   .x...K)y+...-.7E
+    0050 - b7 3f d4 63 be 3e f0 e8-2b 6c d3 17 33 b0 51 58   .?.c.>..+l..3.QX
+    0060 - 08 85 2c 55 c5 b2 02 74-52 ea c2 f9 9c 1d 31 65   ..,U...tR.....1e
+    0070 - a4 1e ce 55 62 f7 5f b2-cb 2b 2a b6 70 64 9c 00   ...Ub._..+*.pd..
+    0080 - 3b 7b 16 55 e2 52 36 9b-26 3c 0b c0 18 29 f0 a0   ;{.U.R6.&<...)..
+    0090 - 69 f2 a3 8b 9b fd fb cb-2c 62 99 ab bf db 43 0d   i.......,b....C.
+    00a0 - f2 a4 b7 a8 0b 33 27 5e-ee b5 58 3f c5 bf 0f 86   .....3'^..X?....
+    00b0 - 97 bf 8f 31 3f 1f 90 47-81 79 07 a9 78 84 b5 32   ...1?..G.y..x..2
+
+    Start Time: 1793925799
+    Timeout   : 7200 (sec)
+    Verify return code: 18 (self-signed certificate)
+    Extended master secret: yes
+---
+DONE
