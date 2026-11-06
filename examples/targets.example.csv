@@ -1,0 +1,4 @@
+host,port,label,sensitivity,confidentiality_years
+hybride,443,Lab - hybrid PQC,3,10
+classique,443,Lab - classical TLS 1.3,2,5
+faible,443,Lab - legacy RSA,1,2
